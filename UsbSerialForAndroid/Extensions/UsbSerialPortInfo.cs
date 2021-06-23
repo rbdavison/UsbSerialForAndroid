@@ -42,7 +42,7 @@ namespace Hoho.Android.UsbSerial.Extensions
 
         public UsbSerialPortInfo(UsbSerialPort port)
         {
-            var device = port.Driver.Device;
+            global::Android.Hardware.Usb.UsbDevice device = port.Driver.Device;
             VendorId = device.VendorId;
             DeviceId = device.DeviceId;
             PortNumber = port.PortNumber;
@@ -55,10 +55,19 @@ namespace Hoho.Android.UsbSerial.Extensions
             PortNumber = parcel.ReadInt();
         }
 
+        /// <summary>
+        /// The Vendor ID for the connected device
+        /// </summary>
         public int VendorId { get; set; }
 
+        /// <summary>
+        /// The Product ID for the connected Device
+        /// </summary>
         public int DeviceId { get; set; }
 
+        /// <summary>
+        /// The Port Number the device is connected to
+        /// </summary>
         public int PortNumber { get; set; }
 
         #region IParcelable implementation
@@ -97,5 +106,6 @@ namespace Hoho.Android.UsbSerial.Extensions
         }
 
         #endregion
+
     }
 }

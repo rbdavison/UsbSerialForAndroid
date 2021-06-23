@@ -84,72 +84,67 @@ namespace Hoho.Android.UsbSerial.Driver
             /**
              * Reset the port.
              */
-            private static int SIO_RESET_REQUEST = 0;
+            private static readonly int SIO_RESET_REQUEST = 0;
 
             /**
              * Set the modem control register.
              */
-            private static int SIO_MODEM_CTRL_REQUEST = 1;
+            private static readonly int SIO_MODEM_CTRL_REQUEST = 1;
 
             /**
              * Set flow control register.
              */
-            private static int SIO_SET_FLOW_CTRL_REQUEST = 2;
+            private static readonly int SIO_SET_FLOW_CTRL_REQUEST = 2;
 
             /**
              * Set baud rate.
              */
-            private static int SIO_SET_BAUD_RATE_REQUEST = 3;
+            private static readonly int SIO_SET_BAUD_RATE_REQUEST = 3;
 
             /**
              * Set the data characteristics of the port.
              */
-            private static int SIO_SET_DATA_REQUEST = 4;
+            private static readonly int SIO_SET_DATA_REQUEST = 4;
 
-            private static int SIO_RESET_SIO = 0;
-            private static int SIO_RESET_PURGE_RX = 1;
-            private static int SIO_RESET_PURGE_TX = 2;
+            private static readonly int SIO_RESET_SIO = 0;
+            private static readonly int SIO_RESET_PURGE_RX = 1;
+            private static readonly int SIO_RESET_PURGE_TX = 2;
 
-            public static int FTDI_DEVICE_OUT_REQTYPE =
-                UsbConstants.UsbTypeVendor | USB_RECIP_DEVICE | USB_ENDPOINT_OUT;
+            public static int FTDI_DEVICE_OUT_REQTYPE = UsbConstants.UsbTypeVendor | USB_RECIP_DEVICE | USB_ENDPOINT_OUT;
 
-            public static int FTDI_DEVICE_IN_REQTYPE =
-                UsbConstants.UsbTypeVendor | USB_RECIP_DEVICE | USB_ENDPOINT_IN;
+            public static int FTDI_DEVICE_IN_REQTYPE = UsbConstants.UsbTypeVendor | USB_RECIP_DEVICE | USB_ENDPOINT_IN;
 
             /**
              *  RTS and DTR values obtained from FreeBSD FTDI driver
              *  https://github.com/freebsd/freebsd/blob/70b396ca9c54a94c3fad73c3ceb0a76dffbde635/sys/dev/usb/serial/uftdi_reg.h
              */
-            private static int FTDI_SIO_SET_DTR_MASK = 0x1;
-            private static int FTDI_SIO_SET_DTR_HIGH = (1 | (FTDI_SIO_SET_DTR_MASK << 8));
-            private static int FTDI_SIO_SET_DTR_LOW = (0 | (FTDI_SIO_SET_DTR_MASK << 8));
-            private static int FTDI_SIO_SET_RTS_MASK = 0x2;
-            private static int FTDI_SIO_SET_RTS_HIGH = (2 | (FTDI_SIO_SET_RTS_MASK << 8));
-            private static int FTDI_SIO_SET_RTS_LOW = (0 | (FTDI_SIO_SET_RTS_MASK << 8));
+            private static readonly int FTDI_SIO_SET_DTR_MASK = 0x1;
+            private static readonly int FTDI_SIO_SET_DTR_HIGH = (1 | (FTDI_SIO_SET_DTR_MASK << 8));
+            private static readonly int FTDI_SIO_SET_DTR_LOW = (0 | (FTDI_SIO_SET_DTR_MASK << 8));
+            private static readonly int FTDI_SIO_SET_RTS_MASK = 0x2;
+            private static readonly int FTDI_SIO_SET_RTS_HIGH = (2 | (FTDI_SIO_SET_RTS_MASK << 8));
+            private static readonly int FTDI_SIO_SET_RTS_LOW = (0 | (FTDI_SIO_SET_RTS_MASK << 8));
             private bool rts;
 
             /**
              * Length of the modem status header, transmitted with every read.
              */
-            private static int MODEM_STATUS_HEADER_LENGTH = 2;
+            private static readonly int MODEM_STATUS_HEADER_LENGTH = 2;
 
-            private String TAG = typeof (FtdiSerialDriver).Name;
+            private readonly string TAG = typeof(FtdiSerialDriver).Name;
 
             private DeviceType mType;
 
-            private int mInterface = 0; /* INTERFACE_ANY */
+            private readonly int mInterface = 0; /* INTERFACE_ANY */
 
-            private int mMaxPacketSize = 64; // TODO(mikey): detect
+            private readonly int mMaxPacketSize = 64; // TODO(mikey): detect
 
             /**
              * Due to http://b.android.com/28023 , we cannot use UsbRequest async reads
              * since it gives no indication of number of bytes read. Set this to
              * {@code true} on platforms where it is fixed.
              */
-            private static Boolean ENABLE_ASYNC_READS = false;
-
-            private IUsbSerialDriver Driver;
-
+            private readonly static Boolean ENABLE_ASYNC_READS = false;
 
             public FtdiSerialPort(UsbDevice device, int portNumber) : base(device, portNumber)
             {
@@ -157,7 +152,7 @@ namespace Hoho.Android.UsbSerial.Driver
 
             public FtdiSerialPort(UsbDevice device, int portNumber, IUsbSerialDriver driver) : base(device, portNumber)
             {
-                this.Driver = driver;
+                Driver = driver;
             }
 
             public override IUsbSerialDriver GetDriver()
@@ -176,28 +171,28 @@ namespace Hoho.Android.UsbSerial.Driver
 
             private int FilterStatusBytes(byte[] src, byte[] dest, int totalBytesRead, int maxPacketSize)
             {
-                int packetsCount = totalBytesRead/maxPacketSize + (totalBytesRead%maxPacketSize == 0 ? 0 : 1);
+                int packetsCount = totalBytesRead / maxPacketSize + (totalBytesRead % maxPacketSize == 0 ? 0 : 1);
                 for (int packetIdx = 0; packetIdx < packetsCount; ++packetIdx)
                 {
                     int count = (packetIdx == (packetsCount - 1))
-                        ? (totalBytesRead%maxPacketSize) - MODEM_STATUS_HEADER_LENGTH
+                        ? (totalBytesRead % maxPacketSize) - MODEM_STATUS_HEADER_LENGTH
                         : maxPacketSize - MODEM_STATUS_HEADER_LENGTH;
                     if (count > 0)
                     {
                         Buffer.BlockCopy(src,
-                            packetIdx*maxPacketSize + MODEM_STATUS_HEADER_LENGTH,
+                            packetIdx * maxPacketSize + MODEM_STATUS_HEADER_LENGTH,
                             dest,
-                            packetIdx*(maxPacketSize - MODEM_STATUS_HEADER_LENGTH),
+                            packetIdx * (maxPacketSize - MODEM_STATUS_HEADER_LENGTH),
                             count);
                     }
                 }
 
-                return totalBytesRead - (packetsCount*2);
+                return totalBytesRead - (packetsCount * 2);
             }
 
             public void Reset()
             {
-                int result = mConnection.ControlTransfer((UsbAddressing) FTDI_DEVICE_OUT_REQTYPE, SIO_RESET_REQUEST,
+                int result = mConnection.ControlTransfer((UsbAddressing)FTDI_DEVICE_OUT_REQTYPE, SIO_RESET_REQUEST,
                     SIO_RESET_SIO, 0 /* index */, null, 0, USB_WRITE_TIMEOUT_MILLIS);
                 if (result != 0)
                 {
@@ -210,13 +205,15 @@ namespace Hoho.Android.UsbSerial.Driver
 
             public override void Open(UsbDeviceConnection connection)
             {
-                if (mConnection != null) {
+                if (mConnection != null)
+                {
                     throw new IOException("Already open");
                 }
                 mConnection = connection;
 
                 Boolean opened = false;
-                try {
+                try
+                {
                     for (int i = 0; i < mDevice.InterfaceCount; i++)
                     {
                         if (connection.ClaimInterface(mDevice.GetInterface(i), true))
@@ -230,7 +227,9 @@ namespace Hoho.Android.UsbSerial.Driver
                     }
                     Reset();
                     opened = true;
-                } finally {
+                }
+                finally
+                {
                     if (!opened)
                     {
                         Close();
@@ -262,7 +261,8 @@ namespace Hoho.Android.UsbSerial.Driver
                 if (ENABLE_ASYNC_READS)
                 {
                     int readAmt;
-                    lock(mReadBufferLock) {
+                    lock (mReadBufferLock)
+                    {
                         // mReadBuffer is only used for maximum read size.
                         readAmt = Math.Min(dest.Length, mReadBuffer.Length);
                     }
@@ -301,7 +301,8 @@ namespace Hoho.Android.UsbSerial.Driver
                 {
                     int totalBytesRead;
 
-                    lock(mReadBufferLock) {
+                    lock (mReadBufferLock)
+                    {
                         int readAmt = Math.Min(dest.Length, mReadBuffer.Length);
 
                         // todo: replace with async call
@@ -328,7 +329,8 @@ namespace Hoho.Android.UsbSerial.Driver
                     int writeLength;
                     int amtWritten;
 
-                    lock(mWriteBufferLock) {
+                    lock (mWriteBufferLock)
+                    {
                         byte[] writeBuffer;
 
                         writeLength = Math.Min(src.Length - offset, mWriteBuffer.Length);
@@ -435,7 +437,7 @@ namespace Hoho.Android.UsbSerial.Driver
                 int bestDivisor = 0;
                 int bestBaud = 0;
                 int bestBaudDiff = 0;
-                int[] fracCode = {0, 3, 2, 4, 1, 5, 6, 7};
+                int[] fracCode = { 0, 3, 2, 4, 1, 5, 6, 7 };
 
                 for (int i = 0; i < 2; i++)
                 {
@@ -569,27 +571,27 @@ namespace Hoho.Android.UsbSerial.Driver
                 return rts;
             }
 
-            public override void SetRTS(Boolean value)
+            public override void SetRTS(bool value)
             {
                 if (value)
                 {
-                    int result = mConnection.ControlTransfer((UsbAddressing)FTDI_DEVICE_OUT_REQTYPE,
-                                                             SIO_MODEM_CTRL_REQUEST,
-                                                             FTDI_SIO_SET_RTS_HIGH,
-                                                             0 /* index */,
-                                                             null,
-                                                             0,
-                                                             USB_WRITE_TIMEOUT_MILLIS);
+                    mConnection.ControlTransfer((UsbAddressing)FTDI_DEVICE_OUT_REQTYPE,
+                                                SIO_MODEM_CTRL_REQUEST,
+                                                FTDI_SIO_SET_RTS_HIGH,
+                                                0 /* index */,
+                                                null,
+                                                0,
+                                                USB_WRITE_TIMEOUT_MILLIS);
                 }
                 else
                 {
-                    int result = mConnection.ControlTransfer((UsbAddressing)FTDI_DEVICE_OUT_REQTYPE,
-                                                             SIO_MODEM_CTRL_REQUEST,
-                                                             FTDI_SIO_SET_RTS_LOW,
-                                                             0 /* index */,
-                                                             null,
-                                                             0,
-                                                             USB_WRITE_TIMEOUT_MILLIS);
+                    mConnection.ControlTransfer((UsbAddressing)FTDI_DEVICE_OUT_REQTYPE,
+                                                SIO_MODEM_CTRL_REQUEST,
+                                                FTDI_SIO_SET_RTS_LOW,
+                                                0 /* index */,
+                                                null,
+                                                0,
+                                                USB_WRITE_TIMEOUT_MILLIS);
                 }
                 rts = value;
             }

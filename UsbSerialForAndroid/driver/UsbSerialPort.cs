@@ -77,13 +77,16 @@ namespace Hoho.Android.UsbSerial.Driver
         /** 2 stop bits. */
         public const int STOPBITS_2 = 2;
 
-        public IUsbSerialDriver Driver => GetDriver();
+        /// <summary>
+        /// The assigned USB Serial Driver for this serial port
+        /// </summary>
+        public IUsbSerialDriver Driver { get; protected set; }
 
         public abstract IUsbSerialDriver GetDriver();
 
-        /**
-         * Port number within driver.
-         */
+        /// <summary>
+        /// Port number within driver.
+        /// </summary>
         public int PortNumber => GetPortNumber();
         public abstract int GetPortNumber();
 

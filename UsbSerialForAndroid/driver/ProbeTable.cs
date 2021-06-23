@@ -22,42 +22,50 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Android.Util;
 
 namespace Hoho.Android.UsbSerial.Driver
 {
+    /// <summary>
+    /// The <see cref="ProbeTable"/> contains the list of all available drivers associated with Vendor ID and Product IDs
+    /// </summary>
     public class ProbeTable
     {
         private readonly string TAG = typeof(ProbeTable).Name;
 
-        Dictionary<Tuple<int, int>, Type> mProbeTable = new Dictionary<Tuple<int, int>, Type>();
+        private readonly Dictionary<Tuple<int, int>, Type> mProbeTable = new Dictionary<Tuple<int, int>, Type>();
 
-
-        /**
-         * Adds or updates a (vendor, product) pair in the table.
-         *
-         * @param vendorId the USB vendor id
-         * @param productId the USB product id
-         * @param driverClass the driver class responsible for this pair
-         * @return {@code this}, for chaining
-         */
-        public ProbeTable AddProduct(int vendorId, int productId,
-                Type driverClass)
+        /// <summary>
+        /// Adds or updates a (vendor, product) pair in the table.
+        /// </summary>
+        /// <param name="vendorId">The USB vendor id</param>
+        /// <param name="productId">The USB product id</param>
+        /// <param name="driverClass">The driver class responsible for this pair</param>
+        /// <returns></returns>
+        public ProbeTable AddProduct(int vendorId, int productId, Type driverClass)
         {
-            var key = new Tuple<int, int>(vendorId, productId);
+            Tuple<int, int> key = new Tuple<int, int>(vendorId, productId);
 
             if (!mProbeTable.ContainsKey(key))
+            {
                 mProbeTable.Add(key, driverClass);
+            }
 
             return this;
         }
 
+        /// <summary>
+        /// Added the passed driver type to the list of supported drivers
+        /// </summary>
+        /// <param name="driverClass"></param>
+        /// <returns></returns>
         public ProbeTable AddDriver(Type driverClass)
         {
             MethodInfo m = driverClass.GetMethod("GetSupportedDevices");
 
-            var devices =  (Dictionary<int, int[]>)m.Invoke(null, null);
+            var devices = (Dictionary<int, int[]>)m.Invoke(null, null);
 
             foreach (var vendorId in devices.Keys)
             {
@@ -68,19 +76,26 @@ namespace Hoho.Android.UsbSerial.Driver
                     try
                     {
                         AddProduct(vendorId, productId, driverClass);
-                        Log.Debug(TAG, $"Added {vendorId:X}, {productId:X}, {driverClass}");
+                        Log.Debug(TAG, $"Added VID:{vendorId:X4} PID:{productId:X4}, {driverClass}");
                     }
                     catch (Exception)
                     {
-                        Log.Debug(TAG, $"Error adding {vendorId:X}, {productId:X}, {driverClass}");
-                        
+                        Log.Debug(TAG, $"Error adding VID:{vendorId:X4} PID:{productId:X4}, {driverClass}");
+
                         throw;
                     }
                 }
             }
 
-            return this;
+#if DEBUG
+            Log.Debug(TAG, $"ProbeTable now contains");
+            foreach (Tuple<int, int> value in mProbeTable.Keys.OrderBy(v => v.Item1).ThenBy(p => p.Item2))
+            {
+                Log.Debug(TAG, string.Format("VID:{0:X4} PID:{1:X4} Driver: {2}", value.Item1, value.Item2, FindDriver(value.Item1, value.Item2).Name));
+            } 
+#endif
 
+            return this;
         }
 
         public Type FindDriver(int vendorId, int productId)

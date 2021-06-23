@@ -95,7 +95,6 @@ namespace Hoho.Android.UsbSerial.Driver
             private UsbEndpoint mReadEndpoint;
             private UsbEndpoint mWriteEndpoint;
 
-            private IUsbSerialDriver Driver;
             private string TAG => (Driver as Cp21xxSerialDriver)?.TAG;
 
 
@@ -171,7 +170,7 @@ namespace Hoho.Android.UsbSerial.Driver
                         {
                             Close();
                         }
-                        catch (IOException e)
+                        catch (IOException)
                         {
                             // Ignore IOExceptions during close()
                         }

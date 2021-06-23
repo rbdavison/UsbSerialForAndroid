@@ -106,7 +106,6 @@ namespace UsbSerialExampleApp
             // adding a custom driver to the default probe table
             var table = UsbSerialProber.DefaultProbeTable;
             table.AddProduct(0x1b4f, 0x0008, typeof(CdcAcmSerialDriver)); // IOIO OTG
-
             table.AddProduct(0x09D8, 0x0420, typeof(CdcAcmSerialDriver)); // Elatec TWN4
 
             var prober = new UsbSerialProber(table);

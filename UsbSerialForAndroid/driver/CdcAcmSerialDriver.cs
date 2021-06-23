@@ -73,8 +73,6 @@ namespace Hoho.Android.UsbSerial.Driver
             private static int SET_CONTROL_LINE_STATE = 0x22;
             private static int SEND_BREAK = 0x23;
 
-            private IUsbSerialDriver Driver;
-
             //public CdcAcmSerialPort(UsbDevice device, int portNumber) : base(device, portNumber)
             //{
             //    mEnableAsyncReads = (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBeanMr1);
@@ -84,7 +82,7 @@ namespace Hoho.Android.UsbSerial.Driver
             {
                 mEnableAsyncReads = (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBeanMr1);
                 //mEnableAsyncReads = false;
-                this.Driver = driver;
+                Driver = driver;
             }
 
 

@@ -39,7 +39,7 @@ namespace Hoho.Android.UsbSerial.Driver
 {
     public class Ch34xSerialDriver : UsbSerialDriver
     {
-        private readonly string TAG = typeof (ProlificSerialDriver).Name;
+        private readonly string TAG = typeof(ProlificSerialDriver).Name;
 
         public Ch34xSerialDriver(UsbDevice device)
         {
@@ -49,17 +49,16 @@ namespace Hoho.Android.UsbSerial.Driver
 
         public class Ch340SerialPort : CommonUsbSerialPort
         {
-            private static int USB_TIMEOUT_MILLIS = 5000;
+            private static readonly int USB_TIMEOUT_MILLIS = 5000;
 
-            private int DEFAULT_BAUD_RATE = 9600;
+            private readonly int DEFAULT_BAUD_RATE = 9600;
 
-            private Boolean dtr = false;
-            private Boolean rts = false;
+            private bool dtr = false;
+            private bool rts = false;
 
             private UsbEndpoint mReadEndpoint;
             private UsbEndpoint mWriteEndpoint;
 
-            private IUsbSerialDriver Driver;
             private string TAG => (Driver as Ch34xSerialDriver)?.TAG;
 
             public Ch340SerialPort(UsbDevice device, int portNumber, IUsbSerialDriver driver) : base(device, portNumber)
@@ -100,9 +99,9 @@ namespace Hoho.Android.UsbSerial.Driver
                     for (int i = 0; i < dataIface.EndpointCount; i++)
                     {
                         UsbEndpoint ep = dataIface.GetEndpoint(i);
-                        if (ep.Type == (UsbAddressing) UsbSupport.UsbEndpointXferBulk)
+                        if (ep.Type == (UsbAddressing)UsbSupport.UsbEndpointXferBulk)
                         {
-                            if (ep.Direction == (UsbAddressing) UsbSupport.UsbDirIn)
+                            if (ep.Direction == (UsbAddressing)UsbSupport.UsbDirIn)
                             {
                                 mReadEndpoint = ep;
                             }
@@ -127,7 +126,7 @@ namespace Hoho.Android.UsbSerial.Driver
                         {
                             Close();
                         }
-                        catch (IOException e)
+                        catch (IOException)
                         {
                             // Ignore IOExceptions during close()
                         }
@@ -218,7 +217,7 @@ namespace Hoho.Android.UsbSerial.Driver
             private int ControlOut(int request, int value, int index)
             {
                 int REQTYPE_HOST_TO_DEVICE = 0x41;
-                return mConnection.ControlTransfer((UsbAddressing) REQTYPE_HOST_TO_DEVICE, request,
+                return mConnection.ControlTransfer((UsbAddressing)REQTYPE_HOST_TO_DEVICE, request,
                     value, index, null, 0, USB_TIMEOUT_MILLIS);
             }
 
@@ -226,7 +225,7 @@ namespace Hoho.Android.UsbSerial.Driver
             private int ControlIn(int request, int value, int index, byte[] buffer)
             {
                 int REQTYPE_HOST_TO_DEVICE = UsbConstants.UsbTypeVendor | UsbSupport.UsbDirIn;
-                return mConnection.ControlTransfer((UsbAddressing) REQTYPE_HOST_TO_DEVICE, request,
+                return mConnection.ControlTransfer((UsbAddressing)REQTYPE_HOST_TO_DEVICE, request,
                     value, index, buffer, buffer.Length, USB_TIMEOUT_MILLIS);
             }
 
@@ -270,7 +269,7 @@ namespace Hoho.Android.UsbSerial.Driver
 
             private void Initialize()
             {
-                CheckState("init #1", 0x5f, 0, new int[] {-1 /* 0x27, 0x30 */, 0x00});
+                CheckState("init #1", 0x5f, 0, new int[] { -1 /* 0x27, 0x30 */, 0x00 });
 
                 if (ControlOut(0xa1, 0, 0) < 0)
                 {
@@ -279,14 +278,14 @@ namespace Hoho.Android.UsbSerial.Driver
 
                 SetBaudRate(DEFAULT_BAUD_RATE);
 
-                CheckState("init #4", 0x95, 0x2518, new int[] {-1 /* 0x56, c3*/, 0x00});
+                CheckState("init #4", 0x95, 0x2518, new int[] { -1 /* 0x56, c3*/, 0x00 });
 
                 if (ControlOut(0x9a, 0x2518, 0x0050) < 0)
                 {
                     throw new IOException("init failed! #5");
                 }
 
-                CheckState("init #6", 0x95, 0x0706, new int[] {0xff, 0xee});
+                CheckState("init #6", 0x95, 0x0706, new int[] { 0xff, 0xee });
 
                 if (ControlOut(0xa1, 0x501f, 0xd90a) < 0)
                 {
@@ -297,7 +296,7 @@ namespace Hoho.Android.UsbSerial.Driver
 
                 WriteHandshakeByte();
 
-                CheckState("init #10", 0x95, 0x0706, new int[] {-1 /* 0x9f, 0xff*/, 0xee});
+                CheckState("init #10", 0x95, 0x0706, new int[] { -1 /* 0x9f, 0xff*/, 0xee });
             }
 
             private void SetBaudRate(int baudRate)
@@ -309,16 +308,16 @@ namespace Hoho.Android.UsbSerial.Driver
                     0x6403, 0x000a, 115200, 0xcc03, 0x0008
                 };
 
-                for (int i = 0; i < baud.Length/3; i++)
+                for (int i = 0; i < baud.Length / 3; i++)
                 {
-                    if (baud[i*3] == baudRate)
+                    if (baud[i * 3] == baudRate)
                     {
-                        int ret = ControlOut(0x9a, 0x1312, baud[i*3 + 1]);
+                        int ret = ControlOut(0x9a, 0x1312, baud[i * 3 + 1]);
                         if (ret < 0)
                         {
                             throw new IOException("Error setting baud rate. #1");
                         }
-                        ret = ControlOut(0x9a, 0x0f2c, baud[i*3 + 2]);
+                        ret = ControlOut(0x9a, 0x0f2c, baud[i * 3 + 2]);
                         if (ret < 0)
                         {
                             throw new IOException("Error setting baud rate. #1");

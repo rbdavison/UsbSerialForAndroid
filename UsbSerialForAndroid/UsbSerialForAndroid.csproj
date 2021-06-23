@@ -19,20 +19,23 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\MonoAndroid5.0\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\MonoAndroid5.0\Android.UsbSerial.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release\MonoAndroid5.0\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <DocumentationFile>bin\Release\MonoAndroid5.0\Android.UsbSerial.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -44,20 +47,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="driver\CdcAcmSerialDriver.cs" />
-    <Compile Include="driver\Ch34xSerialDriver.cs" />
-    <Compile Include="driver\CommonUsbSerialPort.cs" />
-    <Compile Include="driver\Cp21xxSerialDriver.cs" />
-    <Compile Include="driver\FtdiSerialDriver.cs" />
-    <Compile Include="driver\Parity.cs" />
-    <Compile Include="driver\ProbeTable.cs" />
-    <Compile Include="driver\ProlificSerialDriver.cs" />
-    <Compile Include="driver\UsbId.cs" />
-    <Compile Include="driver\UsbSerialDriver.cs" />
-    <Compile Include="driver\UsbSerialPort.cs" />
-    <Compile Include="driver\UsbSerialProber.cs" />
-    <Compile Include="driver\UsbSerialRuntimeException.cs" />
-    <Compile Include="driver\UsbSupport.cs" />
+    <Compile Include="Driver\CdcAcmSerialDriver.cs" />
+    <Compile Include="Driver\Ch34xSerialDriver.cs" />
+    <Compile Include="Driver\CommonUsbSerialPort.cs" />
+    <Compile Include="Driver\Cp21xxSerialDriver.cs" />
+    <Compile Include="Driver\FtdiSerialDriver.cs" />
+    <Compile Include="Driver\Parity.cs" />
+    <Compile Include="Driver\ProbeTable.cs" />
+    <Compile Include="Driver\ProlificSerialDriver.cs" />
+    <Compile Include="Driver\UsbId.cs" />
+    <Compile Include="Driver\UsbSerialDriver.cs" />
+    <Compile Include="Driver\UsbSerialPort.cs" />
+    <Compile Include="Driver\UsbSerialProber.cs" />
+    <Compile Include="Driver\UsbSerialRuntimeException.cs" />
+    <Compile Include="Driver\UsbSupport.cs" />
     <Compile Include="Extensions\AsyncExtensions.cs" />
     <Compile Include="Extensions\BufferExtensions.cs" />
     <Compile Include="Extensions\EventHandlerExtensions.cs" />
@@ -68,19 +71,20 @@
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\HexDump.cs" />
-    <Compile Include="driver\STM32SerialDriver.cs" />
+    <Compile Include="Driver\STM32SerialDriver.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="README.md" />
     <None Include="Resources\AboutResources.txt" />
+    <None Include="UsbSerialForAndroid.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSE.txt" />
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

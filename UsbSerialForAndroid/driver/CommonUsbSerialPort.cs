@@ -105,7 +105,8 @@ namespace Hoho.Android.UsbSerial.Driver
          */
         public void SetReadBufferSize(int bufferSize)
         {
-            lock(mReadBufferLock) {
+            lock (mReadBufferLock)
+            {
                 if (bufferSize == mReadBuffer.Length)
                 {
                     return;
@@ -122,7 +123,8 @@ namespace Hoho.Android.UsbSerial.Driver
          */
         public void SetWriteBufferSize(int bufferSize)
         {
-            lock(mWriteBufferLock) {
+            lock (mWriteBufferLock)
+            {
                 if (bufferSize == mWriteBuffer.Length)
                 {
                     return;
@@ -139,8 +141,7 @@ namespace Hoho.Android.UsbSerial.Driver
 
         public abstract override int Write(byte[] src, int timeoutMillis);
 
-        public abstract override void SetParameters(
-            int baudRate, int dataBits, StopBits stopBits, Parity parity);
+        public abstract override void SetParameters(int baudRate, int dataBits, StopBits stopBits, Parity parity);
 
         public abstract override bool GetCD();
 

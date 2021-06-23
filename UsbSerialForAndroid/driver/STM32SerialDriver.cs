@@ -33,9 +33,9 @@ namespace Hoho.Android.UsbSerial.Driver
 {
 	public class STM32SerialDriver : UsbSerialDriver
 	{
-		readonly string TAG = nameof(STM32SerialDriver);
+		private readonly string TAG = nameof(STM32SerialDriver);
 
-		int mCtrlInterf;
+		private int mCtrlInterf;
 
 		public STM32SerialDriver(UsbDevice device)
 		{
@@ -43,26 +43,38 @@ namespace Hoho.Android.UsbSerial.Driver
 			mPort = new STM32SerialPort(mDevice, 0, this);
 		}
 
+		public static Dictionary<int, int[]> GetSupportedDevices()
+		{
+			return new Dictionary<int, int[]>
+				{
+					{
+						UsbId.VENDOR_STM, new int[]
+						{
+							UsbId.STM32_STLINK,
+							UsbId.STM32_VCOM
+						}
+					}
+				};
+		}
+
 		public class STM32SerialPort : CommonUsbSerialPort
 		{
-			readonly string TAG = nameof(STM32SerialDriver);
+			private readonly string TAG = nameof(STM32SerialDriver);
 
-			readonly bool ENABLE_ASYNC_READS;
-			UsbInterface mControlInterface;
-			UsbInterface mDataInterface;
+			private readonly bool ENABLE_ASYNC_READS;
+			private UsbInterface mControlInterface;
+			private UsbInterface mDataInterface;
 
-			UsbEndpoint mReadEndpoint;
-			UsbEndpoint mWriteEndpoint;
+			private UsbEndpoint mReadEndpoint;
+			private UsbEndpoint mWriteEndpoint;
 
-			bool mRts = false;
-			bool mDtr = false;
+			private bool mRts = false;
+			private bool mDtr = false;
 
-			IUsbSerialDriver Driver;
+			private const int USB_WRITE_TIMEOUT_MILLIS = 5000;
 
-			const int USB_WRITE_TIMEOUT_MILLIS = 5000;
-
-			const int USB_RECIP_INTERFACE = 0x01;
-			const int USB_RT_AM = UsbConstants.UsbTypeClass | USB_RECIP_INTERFACE;
+			private const int USB_RECIP_INTERFACE = 0x01;
+			private const int USB_RT_AM = UsbConstants.UsbTypeClass | USB_RECIP_INTERFACE;
 
 			const int SET_LINE_CODING = 0x20; // USB CDC 1.1 section 6.2
 			const int SET_CONTROL_LINE_STATE = 0x22;
@@ -76,7 +88,7 @@ namespace Hoho.Android.UsbSerial.Driver
 			public override IUsbSerialDriver GetDriver() =>
 				Driver;
 
-			int SendAcmControlMessage(int request, int value, byte[] buf) =>
+			private int SendAcmControlMessage(int request, int value, byte[] buf) =>
 				mConnection.ControlTransfer((UsbAddressing)USB_RT_AM, request, value, (Driver as STM32SerialDriver).mCtrlInterf, buf, buf?.Length ?? 0, USB_WRITE_TIMEOUT_MILLIS);
 
 			public override void Open(UsbDeviceConnection connection)
@@ -306,20 +318,6 @@ namespace Hoho.Android.UsbSerial.Driver
 			{
 				int value = (mRts ? 0x2 : 0) | (mDtr ? 0x1 : 0);
 				SendAcmControlMessage(SET_CONTROL_LINE_STATE, value, null);
-			}
-
-			public static Dictionary<int, int[]> GetSupportedDevices()
-			{
-				return new Dictionary<int, int[]>
-				{
-					{
-						UsbId.VENDOR_STM, new int[]
-						{
-							UsbId.STM32_STLINK,
-							UsbId.STM32_VCOM
-						}
-					}
-				};
 			}
 		}
 	}

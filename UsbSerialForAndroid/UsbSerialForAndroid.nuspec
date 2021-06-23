@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <description>UsbSerialForAndroid provides a 100% C# port of the Java library usb-serial-for-android
+Supported Devices:
+VID:03EB PID:2044 Driver: CdcAcmSerialDriver
+VID:0403 PID:6001 Driver: FtdiSerialDriver
+VID:0403 PID:6015 Driver: FtdiSerialDriver
+VID:0483 PID:374B Driver: STM32SerialDriver
+VID:0483 PID:5740 Driver: STM32SerialDriver
+VID:067B PID:067B Driver: ProlificSerialDriver
+VID:09D8 PID:0320 Driver: CdcAcmSerialDriver
+VID:09D8 PID:0406 Driver: CdcAcmSerialDriver
+VID:09D8 PID:0420 Driver: CdcAcmSerialDriver
+VID:10C4 PID:EA60 Driver: Cp21xxSerialDriver
+VID:10C4 PID:EA70 Driver: Cp21xxSerialDriver
+VID:10C4 PID:EA71 Driver: Cp21xxSerialDriver
+VID:10C4 PID:EA80 Driver: Cp21xxSerialDriver
+VID:16C0 PID:0483 Driver: CdcAcmSerialDriver
+VID:1A86 PID:7523 Driver: Ch34xSerialDriver
+VID:1EAF PID:0004 Driver: CdcAcmSerialDriver
+VID:2341 PID:0001 Driver: CdcAcmSerialDriver
+VID:2341 PID:0010 Driver: CdcAcmSerialDriver
+VID:2341 PID:003B Driver: CdcAcmSerialDriver
+VID:2341 PID:003F Driver: CdcAcmSerialDriver
+VID:2341 PID:0042 Driver: CdcAcmSerialDriver
+VID:2341 PID:0043 Driver: CdcAcmSerialDriver
+VID:2341 PID:0044 Driver: CdcAcmSerialDriver
+VID:2341 PID:8036 Driver: CdcAcmSerialDriver
+VID:2341 PID:8037 Driver: CdcAcmSerialDriver
+</description>
+    <license type="file">LICENSE.txt</license>
+    <tags>UsbSerialForAndroid USB Serial Android CDC/ACM CH34x CP21XX FTDI Prolific STM32</tags>
+    <authors>anotherlab, nwestfall, Wim-Dekker, rbdavison</authors>
+    <owners>anotherlab</owners>
+    <repository type="git" url="https://github.com/anotherlab/UsbSerialForAndroid.git" branch="$branch$" commit="$commit$" />
+  </metadata>
+  <files>
+    <file src="..\LICENSE.txt" target="" />
+    <file src="..\README.md" target="docs\" />
+  </files>
+</package>

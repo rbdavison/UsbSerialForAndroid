@@ -39,7 +39,7 @@ namespace Hoho.Android.UsbSerial.Driver
 {
     public class UsbSerialProber
     {
-        private ProbeTable mProbeTable;
+        private readonly ProbeTable mProbeTable;
 
         public UsbSerialProber(ProbeTable probeTable)
         {
@@ -61,6 +61,7 @@ namespace Hoho.Android.UsbSerial.Driver
             probeTable.AddDriver(typeof(FtdiSerialDriver));
             probeTable.AddDriver(typeof(ProlificSerialDriver));
             probeTable.AddDriver(typeof(Ch34xSerialDriver));
+            probeTable.AddDriver(typeof(STM32SerialDriver));
             return probeTable;
         }
 
@@ -75,7 +76,7 @@ namespace Hoho.Android.UsbSerial.Driver
          */
         public List<IUsbSerialDriver> FindAllDrivers(UsbManager usbManager)
         {
-            List< IUsbSerialDriver > result = new List<IUsbSerialDriver>();
+            List<IUsbSerialDriver> result = new List<IUsbSerialDriver>();
 
             foreach (UsbDevice usbDevice in usbManager.DeviceList.Values)
             {
@@ -106,16 +107,26 @@ namespace Hoho.Android.UsbSerial.Driver
                 IUsbSerialDriver driver;
                 try
                 {
-                    driver = (IUsbSerialDriver)Activator.CreateInstance(driverClass, new System.Object[] {usbDevice});
-                } catch (NoSuchMethodException e) {
+                    driver = (IUsbSerialDriver)Activator.CreateInstance(driverClass, new object[] { usbDevice });
+                }
+                catch (NoSuchMethodException e)
+                {
                     throw new RuntimeException(e);
-                } catch (IllegalArgumentException e) {
+                }
+                catch (IllegalArgumentException e)
+                {
                     throw new RuntimeException(e);
-                } catch (InstantiationException e) {
+                }
+                catch (InstantiationException e)
+                {
                     throw new RuntimeException(e);
-                } catch (IllegalAccessException e) {
+                }
+                catch (IllegalAccessException e)
+                {
                     throw new RuntimeException(e);
-                } catch (InvocationTargetException e) {
+                }
+                catch (InvocationTargetException e)
+                {
                     throw new RuntimeException(e);
                 }
                 return driver;
